@@ -11,6 +11,7 @@
             --light-yellow: #FFF9C4;
             --sand: #F4E5C2;
             --text-dark: #333;
+            --error-red: #ff4444;
         }
         
         body {
@@ -72,6 +73,7 @@
             justify-content: center;
             margin-top: 30px;
             gap: 15px;
+            flex-wrap: wrap;
         }
         
         button {
@@ -102,6 +104,16 @@
         
         .print-btn:hover {
             background-color: var(--light-yellow);
+            transform: scale(1.05);
+        }
+        
+        .reset-btn {
+            background-color: var(--error-red);
+            color: white;
+        }
+        
+        .reset-btn:hover {
+            background-color: #cc0000;
             transform: scale(1.05);
         }
         
@@ -153,6 +165,7 @@
         <div class="buttons">
             <button class="save-btn" id="saveBtn">Spremi Popis</button>
             <button class="print-btn" id="printBtn">Ispiši Popis</button>
+            <button class="reset-btn" id="resetBtn">Resetiraj Sve</button>
         </div>
         
         <div class="summary" id="summary">
@@ -188,7 +201,7 @@
             "kese za smeće", "plastične čaše to go", "papirnate velike to go",
             "papirnate srednje to go", "papirnate male to go", "poklopci mali to go",
             "poklopci veliki to go", "des forte", "matchi tonic spicy", "matchi tonic floral",
-            "matchi tonic mediteran", "mathci tonic indian", "papir za kasu", "papir za pos"
+            "matchi tonic mediteran", "mathci tonic indian"
         ];
         
         // Inicijalizacija aplikacije
@@ -196,6 +209,7 @@
             const productList = document.getElementById('productList');
             const saveBtn = document.getElementById('saveBtn');
             const printBtn = document.getElementById('printBtn');
+            const resetBtn = document.getElementById('resetBtn');
             const summary = document.getElementById('summary');
             const summaryContent = document.getElementById('summaryContent');
             const searchInput = document.getElementById('searchInput');
@@ -277,6 +291,19 @@
                 
                 localStorage.setItem('beachBarSupplies', JSON.stringify(quantities));
                 alert('Popis je uspješno spremljen!');
+            });
+            
+            // Resetiraj sve unose
+            resetBtn.addEventListener('click', function() {
+                if(confirm('Jeste li sigurni da želite resetirati sve unose na nulu?')) {
+                    const allInputs = document.querySelectorAll('.product-quantity');
+                    allInputs.forEach(input => {
+                        input.value = '0';
+                    });
+                    
+                    localStorage.removeItem('beachBarSupplies');
+                    alert('Svi unosi su resetirani!');
+                }
             });
             
             // Prikaži sažetak za printanje
