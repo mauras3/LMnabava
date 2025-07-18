@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nabava Lungo Mare</title>
+    <style>
+        :root {
+            --primary-yellow: #FFD700;
+            --dark-yellow: #FFC300;
+            --light-yellow: #FFF9C4;
+            --sand: #F4E5C2;
+            --text-dark: #333;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--sand);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: var(--dark-yellow);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        .product-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background-color: var(--light-yellow);
+            border-radius: 8px;
+            border-left: 5px solid var(--primary-yellow);
+        }
+        
+        .product-name {
+            font-weight: bold;
+            flex-grow: 1;
+        }
+        
+        .product-quantity {
+            width: 60px;
+            padding: 8px;
+            border: 2px solid var(--primary-yellow);
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 15px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .save-btn {
+            background-color: var(--primary-yellow);
+            color: var(--text-dark);
+        }
+        
+        .save-btn:hover {
+            background-color: var(--dark-yellow);
+            transform: scale(1.05);
+        }
+        
+        .print-btn {
+            background-color: white;
+            border: 2px solid var(--primary-yellow);
+            color: var(--text-dark);
+        }
+        
+        .print-btn:hover {
+            background-color: var(--light-yellow);
+            transform: scale(1.05);
+        }
+        
+        .summary {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: var(--light-yellow);
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .summary h2 {
+            color: var(--dark-yellow);
+            margin-top: 0;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .search-container {
+            margin-bottom: 20px;
+        }
+        
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--primary-yellow);
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nabava Lungo Mare</h1>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Pretraži proizvode...">
+        </div>
+        
+        <div class="product-list" id="productList">
+            <!-- Proizvodi će biti dinamički dodani ovdje -->
+        </div>
+        
+        <div class="buttons">
+            <button class="save-btn" id="saveBtn">Spremi Popis</button>
+            <button class="print-btn" id="printBtn">Ispiši Popis</button>
+        </div>
+        
+        <div class="summary" id="summary">
+            <h2>Sažetak Nabave</h2>
+            <div id="summaryContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Lista proizvoda za beach bar
+        const products = [
+            "Sokić naranča", "sokić jabuka", "sokić breskva", "sokić crni ribiz",
+            "coca-cola", "coca-cola zero", "bio cola", "sp oak", "sp citrus",
+            "sp ginger", "ginger ale", "pure tonic cortese", "pure tonic light",
+            "pink lady", "limonata cortese", "aranciata cortese", "ledeni čaj",
+            "red bull", "gazirana voda", "negazirana voda", "senzacija",
+            "corona", "bavaria", "leffe brune", "somersby", "leffe blond",
+            "heineken", "beck's", "ožujsko", "radler", "bačva",
+            "rose", "malvazija", "cabarnet", "feravino", "martini bianco",
+            "martini rosso", "šljivovica", "travarica", "terranino", "medica",
+            "havana", "vodka", "beefeater", "tequila", "triple sec",
+            "captain morgan black", "peach liker", "elderflower liker",
+            "aperol", "campari", "maraschino", "apricot liker", "grand marnier",
+            "jack daniel's", "kokos sirup", "jagoda sirup", "grenadine", "bacardi",
+            "pelinkovac antique", "jagermeister", "bailey's", "patron sliver",
+            "belvedere vodka", "grey goose", "martell VSOP", "jameson", "chivas",
+            "johnnie walker red", "johnnie walker black", "artisan gin", "bombay saphire",
+            "hendrick's", "gin mare", "monkey 47", "sok ananas", "sok brusnica",
+            "sok naranča", "kava", "nescafe vanilija", "nescafe cokolada", "nescafe classic",
+            "vruča čokolada", "med", "bezkofeinska kava", "smeđi šečer a kg", "kokosovo brašno",
+            "dehidrirani limun", "deh naranča", "deh limeta", "cimet", "ruže", "papar",
+            "juniper", "smeđi šećer za kavu", "bijeli šećer za kavu", "keksići", "slamke",
+            "kese za smeće", "plastične čaše to go", "papirnate velike to go",
+            "papirnate srednje to go", "papirnate male to go", "poklopci mali to go",
+            "poklopci veliki to go", "des forte", "matchi tonic spicy", "matchi tonic floral",
+            "matchi tonic mediteran", "mathci tonic indian", "papir za kasu", "papir za pos"
+        ];
+        
+        // Inicijalizacija aplikacije
+        document.addEventListener('DOMContentLoaded', function() {
+            const productList = document.getElementById('productList');
+            const saveBtn = document.getElementById('saveBtn');
+            const printBtn = document.getElementById('printBtn');
+            const summary = document.getElementById('summary');
+            const summaryContent = document.getElementById('summaryContent');
+            const searchInput = document.getElementById('searchInput');
+            
+            // Funkcija za prikaz proizvoda
+            function displayProducts(productsToShow = products) {
+                productList.innerHTML = '';
+                
+                productsToShow.forEach(product => {
+                    const productItem = document.createElement('div');
+                    productItem.className = 'product-item';
+                    
+                    const id = product.toLowerCase().replace(/\s+/g, '-').replace(/[čćšđž]/g, function(match) {
+                        const map = { 'č': 'c', 'ć': 'c', 'š': 's', 'đ': 'd', 'ž': 'z' };
+                        return map[match];
+                    });
+                    
+                    productItem.innerHTML = `
+                        <span class="product-name">${product}</span>
+                        <input type="number" min="0" class="product-quantity" id="${id}" placeholder="0">
+                    `;
+                    
+                    productList.appendChild(productItem);
+                });
+                
+                // Učitaj spremljene podatke ako postoje
+                const savedData = localStorage.getItem('beachBarSupplies');
+                if (savedData) {
+                    const quantities = JSON.parse(savedData);
+                    
+                    for (const product in quantities) {
+                        const id = product.toLowerCase().replace(/\s+/g, '-').replace(/[čćšđž]/g, function(match) {
+                            const map = { 'č': 'c', 'ć': 'c', 'š': 's', 'đ': 'd', 'ž': 'z' };
+                            return map[match];
+                        });
+                        
+                        const input = document.getElementById(id);
+                        if (input) {
+                            input.value = quantities[product];
+                        }
+                    }
+                }
+            }
+            
+            // Prikaz svih proizvoda prilikom učitavanja
+            displayProducts();
+            
+            // Pretraživanje proizvoda
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                if (searchTerm.trim() === '') {
+                    displayProducts();
+                    return;
+                }
+                
+                const filteredProducts = products.filter(product => 
+                    product.toLowerCase().includes(searchTerm)
+                );
+                
+                displayProducts(filteredProducts);
+            });
+            
+            // Spremi popis u localStorage
+            saveBtn.addEventListener('click', function() {
+                const quantities = {};
+                
+                products.forEach(product => {
+                    const id = product.toLowerCase().replace(/\s+/g, '-').replace(/[čćšđž]/g, function(match) {
+                        const map = { 'č': 'c', 'ć': 'c', 'š': 's', 'đ': 'd', 'ž': 'z' };
+                        return map[match];
+                    });
+                    
+                    const quantity = document.getElementById(id)?.value || 0;
+                    if (quantity > 0) {
+                        quantities[product] = quantity;
+                    }
+                });
+                
+                localStorage.setItem('beachBarSupplies', JSON.stringify(quantities));
+                alert('Popis je uspješno spremljen!');
+            });
+            
+            // Prikaži sažetak za printanje
+            printBtn.addEventListener('click', function() {
+                let hasItems = false;
+                let summaryHTML = '';
+                
+                products.forEach(product => {
+                    const id = product.toLowerCase().replace(/\s+/g, '-').replace(/[čćšđž]/g, function(match) {
+                        const map = { 'č': 'c', 'ć': 'c', 'š': 's', 'đ': 'd', 'ž': 'z' };
+                        return map[match];
+                    });
+                    
+                    const quantity = document.getElementById(id)?.value;
+                    
+                    if (quantity && quantity > 0) {
+                        hasItems = true;
+                        summaryHTML += `
+                            <div class="summary-item">
+                                <span>${product}</span>
+                                <span>${quantity} kom</span>
+                            </div>
+                        `;
+                    }
+                });
+                
+                if (hasItems) {
+                    summaryContent.innerHTML = summaryHTML;
+                    summary.style.display = 'block';
+                    
+                    // Sačekaj malo da se DOM ažurira prije printanja
+                    setTimeout(() => {
+                        window.print();
+                        summary.style.display = 'none';
+                    }, 100);
+                } else {
+                    alert('Niste unijeli ništa za nabaviti!');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
